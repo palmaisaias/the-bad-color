@@ -1,0 +1,117 @@
+:root{
+  --bg:#0c0b09;
+  --paper:#1b1a14;
+  --ink:#eadfca;
+  --muted:#c8b999;
+  --accent:#c4a13a;
+  --accent-2:#7d3a1f;
+  --accent-3:#355b3a;
+  --ring:rgba(196,161,58,.35);
+  --shadow:rgba(0,0,0,.35);
+  --radius:18px;
+  --radius-lg:26px;
+  --gap:clamp(14px,2.1vw,24px);
+  --pad:clamp(16px,2.8vw,36px);
+  --headline:'Cinzel',serif;
+  --display:'IM Fell English',serif;
+  --body:'Crimson Text',serif;
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--body); overflow-x:hidden;
+}
+
+/* Subtle vignette + film grain without pushing layout */
+#root::before{
+  content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 50% 10%, rgba(255,221,130,0.08), transparent 55%),
+    radial-gradient(100% 60% at 50% 120%, rgba(0,0,0,0.6), rgba(0,0,0,0.9));
+}
+#root::after{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:repeating-radial-gradient(circle at 20% 30%,
+    rgba(255,255,255,.02), rgba(255,255,255,.02) 2px,
+    transparent 3px, transparent 6px);
+  filter:contrast(120%) brightness(90%);
+  animation:grain 14s steps(10) infinite;
+}
+@keyframes grain{0%{transform:translate(0,0)}100%{transform:translate(10px,-12px)}}
+
+/* Container framing */
+.v-frame{
+  max-width:1200px; margin:0 auto; padding:calc(var(--pad) + 8px) var(--pad);
+}
+
+/* Brand */
+.v-brand-title{font-family:var(--display); letter-spacing:.5px}
+.v-brand-sub{opacity:.75; font-size:.9rem}
+
+/* Buttons that match palette */
+.btn-village{
+  --bs-btn-color:var(--ink);
+  --bs-btn-border-color:rgba(255,255,255,.12);
+  --bs-btn-bg:rgba(255,245,220,.05);
+  --bs-btn-hover-bg:rgba(255,245,220,.12);
+  --bs-btn-hover-border-color:var(--ring);
+  --bs-btn-active-bg:rgba(255,245,220,.08);
+  --bs-btn-focus-shadow-rgb:196,161,58;
+  border-radius:var(--radius);
+  box-shadow:0 2px 10px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.06);
+  font-family:var(--headline);
+}
+
+/* Card shell */
+.v-card{
+  background:linear-gradient(180deg, rgba(255,240,200,.03), rgba(0,0,0,.25)), var(--paper);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--radius-lg);
+  box-shadow:0 10px 26px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.03);
+  overflow:hidden;
+}
+
+/* Headings */
+.v-h1{
+  font-family:var(--headline);
+  font-weight:700;
+  font-size:clamp(28px,5vw,56px);
+  line-height:1.05;
+  text-shadow:0 2px 0 rgba(0,0,0,.4);
+}
+.v-h2{ font-family:var(--display); }
+
+/* Carousel specifics */
+.v-carousel .carousel-item{
+  padding: clamp(14px, 2vw, 24px);
+}
+.v-img {
+  width: 100%;
+  max-height: 650px; /* taller */
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+@media (max-width: 768px){
+  .v-text{ text-align:center; }
+}
+
+/* Link style */
+.v-link{
+  color:var(--ink); text-decoration:none; border-bottom:1px solid rgba(255,255,255,.25);
+}
+.v-link:hover{ color:var(--muted); border-bottom-color:var(--accent); }
+
+/* Video shell */
+.v-video{
+  background: radial-gradient(120% 140% at 30% 10%, rgba(250,230,165,.05), rgba(0,0,0,.7));
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 18px 40px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.04);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+}
+
+/* Utility */
+.text-muted-village{ color: var(--muted) !important; }
