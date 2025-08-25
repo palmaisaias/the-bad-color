@@ -7,13 +7,13 @@ export type Story = {
 
 export const stories: Story[] = [
   {
-    image: "image1.png",
+    image: "image1.webp",
     label: "Diana",
     title: "The Mother in Mourning",
     text: `Her love for music and lavender was eclipsed when her husband Edward was killed in a senseless act of violence during a late-night store robbery. She was left holding their 7-month-old son, Vincent, knowing he would grow up never hearing his father's voice. Overwhelmed by grief and the ugliness of the world, she became one of the first to believe that a village could be built away from it all — where children could grow in safety and innocence.`
   },
   {
-    image: "image2.png",
+    image: "image2.webp",
     label: "Edgar",
     title: "The Father Who Lost His Place",
     text: `Edgar loved puzzles and logic,
@@ -34,7 +34,7 @@ place left where order and
 peace could endure.`
   },
   {
-    image: "image3.png",
+    image: "image3.webp",
     label: "Gammy",
     title: "The Outdoorsman Shattered",
     text: `Strong, devoted, and happiest
@@ -56,7 +56,7 @@ them better than man’s world
 ever had.`
   },
   {
-    image: "image4.png",
+    image: "image4.webp",
     label: "Ely",
     title: "The Devoted Husband",
     text: `Ely loved his Padres games,
@@ -76,7 +76,7 @@ are not safe, drove him to join
 the founding of the village.`
   },
   {
-    image: "image5.png",
+    image: "image5.webp",
     label: "Gregorio",
     title: "The Healer Who Couldn't Save",
     text: `Gregorio worked tirelessly
@@ -100,7 +100,7 @@ leave that world behind
 entirely.`
   },
   {
-    image: "image6.png",
+    image: "image6.webp",
     label: "Raquel",
     title: "The Dreamer Destroyed",
     text: `Bright and spirited, Raquel
@@ -121,7 +121,7 @@ innocence and joy would never
 again be stolen.`
   },
   {
-    image: "image7.png",
+    image: "image7.webp",
     label: "Rebecca",
     title: "The Seeker of Truth",
     text: `Rebecca’s obsession with crime
@@ -143,7 +143,7 @@ could be restored to their
 lives.`
   },
   {
-    image: "image8.png",
+    image: "image8.webp",
     label: "Mia",
     title: "The Youngest, the Bohemian Spirit",
     text: `Mia loved the Beatles, daisies,
@@ -163,5 +163,16 @@ carrying with her the image of
 Pooka and a vow that no child
 in their new home would ever
 know that kind of cruelty.`
-  }
+  },
+  {
+  image: "image9.webp", // replace with actual file name from the generated image
+  label: "Xochitl",
+  title: "The Nourisher who could not save",
+  text: `Xochitl poured her heart into the meals she made, believing that food was a language of love.
+One evening, she invited her closest friends for dinner, filling the table with steaming coffee and her
+signature stew. By night’s end, a forgotten jar of spoiled preserves had turned the gathering into tragedy.
+She buried more than recipes that week — she buried laughter, trust, and the life she knew. Seeking a place
+where sorrow could not reach her, she followed the others to the village, hoping that in silence, her heart
+might one day be fed again.`
+}
 ];
