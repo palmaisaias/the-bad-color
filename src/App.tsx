@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // --- Quick setup notes -------------------------------------------------------
 // 1) Drop your PNGs (image1.png, image2.png, ...) and your MP4 into the same
