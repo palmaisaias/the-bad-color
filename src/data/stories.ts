@@ -167,7 +167,7 @@ know that kind of cruelty.`
   {
   image: "image9.webp", // replace with actual file name from the generated image
   label: "Xochitl",
-  title: "The Nourisher who could not save",
+  title: "The Nourisher Who Would Not Save",
   text: `Xochitl poured her heart into the meals she made, believing that food was a language of love.
 One evening, she invited her closest friends for dinner, filling the table with steaming coffee and her
 signature stew. By night’s end, a forgotten jar of spoiled preserves had turned the gathering into tragedy.

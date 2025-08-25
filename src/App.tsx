@@ -111,7 +111,7 @@ function ScreeningPage({ onBack }: { onBack: () => void }) {
 
       <section className="v-video p-2">
         <div className="ratio ratio-16x9">
-          <video controls preload="metadata" poster="poster.jpg" src="village.mp4" />
+          <video controls preload="metadata" poster="https://ih1.redbubble.net/image.1141507787.8988/flat,750x,075,f-pad,750x1000,f8f8f8.u2.jpg" src="https://the-bad-color.sfo3.cdn.digitaloceanspaces.com/red%20is%20bad.mp4" />
         </div>
       </section>
 
