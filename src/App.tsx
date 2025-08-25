@@ -65,17 +65,28 @@ function Brand() {
 }
 
 function TalesPage({ onEnter }: { onEnter: () => void }) {
-  // Controlled carousel index so we can pause audio on slide change
   const [active, setActive] = useState(0);
+  const [touchEnabled, setTouchEnabled] = useState(true);
 
-  // Pause any playing audio when this page unmounts
-  useEffect(() => {
-    return () => pauseAllAudio();
+  useEffect(() => () => {
+    document.querySelectorAll<HTMLAudioElement>("audio").forEach(a => a.pause());
   }, []);
 
   const handleSelect = (next: number) => {
     setActive(next);
-    pauseAllAudio();
+    document.querySelectorAll<HTMLAudioElement>("audio").forEach(a => a.pause());
+  };
+
+  // keep handlers tidy
+  const stopSwipe: React.EventHandler<any> = (e) => {
+    // block the carousel from seeing this interaction
+    e.stopPropagation();
+    // temporarily disable carousel touch while user interacts
+    if (touchEnabled) setTouchEnabled(false);
+  };
+  const releaseSwipe = () => {
+    // re-enable after the tap/drag completes
+    if (!touchEnabled) setTouchEnabled(true);
   };
 
   return (
@@ -90,30 +101,54 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       <section className="v-card v-carousel">
-        <Carousel interval={null} indicators activeIndex={active} onSelect={handleSelect}>
+        <Carousel
+          interval={null}
+          indicators
+          activeIndex={active}
+          onSelect={handleSelect}
+          touch={touchEnabled}        // <- key line
+          keyboard                     // optional: allow arrow keys
+          pause={false}                // don’t auto-pause on hover (mobile)
+        >
           {stories.map((s, i) => (
             <Carousel.Item key={i}>
               <Row className="align-items-stretch g-3">
                 <Col md={6}>
                   <img src={s.image} alt={`${s.label} — illustration`} className="v-img" />
                 </Col>
-                <Col md={6} className="v-text d-flex flex-column justify-content-center p-3 p-md-4">
-                  <div className="text-muted-village" style={{ fontFamily: "var(--headline)" }}>{s.label}</div>
-                  <h2 className="v-h2 h3 mt-1 mb-2">{s.title}</h2>
 
-                  {/* preserve manual line breaks if you use template literals */}
+                <Col md={6} className="v-text d-flex flex-column justify-content-center p-3 p-md-4">
+                  <div className="text-muted-village" style={{ fontFamily: "var(--headline)" }}>
+                    {s.label}
+                  </div>
+                  <h2 className="v-h2 h3 mt-1 mb-2">{s.title}</h2>
                   <p className="mb-2" style={{ lineHeight: 1.55, whiteSpace: "pre-line" }}>{s.text}</p>
 
-                  {/* Optional audio player. You can add `audio: "audio/xyz.mp3"` per story. */}
+                  {/* AUDIO: add audio path in stories.ts as s.audio */}
                   {"audio" in s && (s as any).audio && (
-                    <audio
-                      controls
-                      preload="none"
-                      // attach src only for the active slide to save bandwidth on mobile
-                      src={active === i ? (s as any).audio : undefined}
-                      className="w-100"
-                      style={{ borderRadius: 8 }}
-                    />
+                    <div
+                      className="no-swipe-audio"
+                      // prevent carousel swipe from triggering
+                      onTouchStart={stopSwipe}
+                      onTouchEnd={releaseSwipe}
+                      onPointerDown={stopSwipe}
+                      onPointerUp={releaseSwipe}
+                      onMouseDown={stopSwipe}
+                      onMouseUp={releaseSwipe}
+                      onClick={stopSwipe}
+                      style={{ touchAction: "pan-y" }}  // allow vertical scroll, block horizontal swipe
+                    >
+                      <audio
+                        controls
+                        preload="none"
+                        playsInline
+                        // only load the active slide’s audio
+                        src={active === i ? (s as any).audio : undefined}
+                        className="w-100"
+                        // compact-ish height (native UI still rules on iOS)
+                        controlsList="nodownload noplaybackrate"
+                      />
+                    </div>
                   )}
                 </Col>
               </Row>
@@ -122,7 +157,11 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
         </Carousel>
 
         <div className="text-center py-3">
-          <a className="v-link" href="#/screening" onClick={(e)=>{e.preventDefault(); pauseAllAudio(); onEnter();}}>
+          <a
+            className="v-link"
+            href="#/screening"
+            onClick={(e) => { e.preventDefault(); document.querySelectorAll<HTMLAudioElement>('audio').forEach(a => a.pause()); onEnter(); }}
+          >
             enter the Village
           </a>
         </div>

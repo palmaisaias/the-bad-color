@@ -115,3 +115,13 @@ body{
 
 /* Utility */
 .text-muted-village{ color: var(--muted) !important; }
+
+/* prevent horizontal swipe on the audio control area */
+.no-swipe-audio { touch-action: pan-y; }
+
+/* optional: make the audio bar feel tighter on small screens */
+@media (max-width: 480px) {
+  .no-swipe-audio audio {
+    height: 36px;           /* browsers may ignore exact height, but helps on Android/Chrome */
+  }
+}
