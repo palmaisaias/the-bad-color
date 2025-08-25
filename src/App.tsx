@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Carousel } from "react-bootstrap";
 import { stories } from "./data/stories";
 
