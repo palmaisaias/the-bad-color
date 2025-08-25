@@ -25,6 +25,13 @@ export default function App() {
   );
 }
 
+/** utility: pause every <audio> on the page */
+function pauseAllAudio() {
+  document.querySelectorAll<HTMLAudioElement>("audio").forEach(a => {
+    try { a.pause(); } catch {}
+  });
+}
+
 function Brand() {
   return (
     <Row className="align-items-center mb-3 g-3">
@@ -58,6 +65,19 @@ function Brand() {
 }
 
 function TalesPage({ onEnter }: { onEnter: () => void }) {
+  // Controlled carousel index so we can pause audio on slide change
+  const [active, setActive] = useState(0);
+
+  // Pause any playing audio when this page unmounts
+  useEffect(() => {
+    return () => pauseAllAudio();
+  }, []);
+
+  const handleSelect = (next: number) => {
+    setActive(next);
+    pauseAllAudio();
+  };
+
   return (
     <>
       <Brand />
@@ -70,7 +90,7 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       <section className="v-card v-carousel">
-        <Carousel interval={null} indicators>
+        <Carousel interval={null} indicators activeIndex={active} onSelect={handleSelect}>
           {stories.map((s, i) => (
             <Carousel.Item key={i}>
               <Row className="align-items-stretch g-3">
@@ -80,14 +100,29 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
                 <Col md={6} className="v-text d-flex flex-column justify-content-center p-3 p-md-4">
                   <div className="text-muted-village" style={{ fontFamily: "var(--headline)" }}>{s.label}</div>
                   <h2 className="v-h2 h3 mt-1 mb-2">{s.title}</h2>
-                  <p className="mb-0" style={{ lineHeight: 1.55 }}>{s.text}</p>
+
+                  {/* preserve manual line breaks if you use template literals */}
+                  <p className="mb-2" style={{ lineHeight: 1.55, whiteSpace: "pre-line" }}>{s.text}</p>
+
+                  {/* Optional audio player. You can add `audio: "audio/xyz.mp3"` per story. */}
+                  {"audio" in s && (s as any).audio && (
+                    <audio
+                      controls
+                      preload="none"
+                      // attach src only for the active slide to save bandwidth on mobile
+                      src={active === i ? (s as any).audio : undefined}
+                      className="w-100"
+                      style={{ borderRadius: 8 }}
+                    />
+                  )}
                 </Col>
               </Row>
             </Carousel.Item>
           ))}
         </Carousel>
+
         <div className="text-center py-3">
-          <a className="v-link" href="#/screening" onClick={(e)=>{e.preventDefault(); onEnter();}}>
+          <a className="v-link" href="#/screening" onClick={(e)=>{e.preventDefault(); pauseAllAudio(); onEnter();}}>
             enter the Village
           </a>
         </div>
@@ -97,11 +132,18 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
 }
 
 function ScreeningPage({ onBack }: { onBack: () => void }) {
+  useEffect(() => {
+    // ensure nothing keeps playing if user jumped here mid-track
+    pauseAllAudio();
+  }, []);
+
   return (
     <>
       <Row className="align-items-center mb-3 g-3">
         <Col xs="auto">
-          <Button className="btn-village" onClick={onBack}>Back to Tales</Button>
+          <Button className="btn-village" onClick={() => { pauseAllAudio(); onBack(); }}>
+            Back to Tales
+          </Button>
         </Col>
         <Col className="text-center">
           <h1 className="v-h1 m-0">The Village Screening Room</h1>
@@ -111,7 +153,12 @@ function ScreeningPage({ onBack }: { onBack: () => void }) {
 
       <section className="v-video p-2">
         <div className="ratio ratio-16x9">
-          <video controls preload="metadata" poster="https://ih1.redbubble.net/image.1141507787.8988/flat,750x,075,f-pad,750x1000,f8f8f8.u2.jpg" src="https://the-bad-color.sfo3.cdn.digitaloceanspaces.com/red%20is%20bad.mp4" />
+          <video
+            controls
+            preload="metadata"
+            poster="https://ih1.redbubble.net/image.1141507787.8988/flat,750x,075,f-pad,750x1000,f8f8f8.u2.jpg"
+            src="https://the-bad-color.sfo3.cdn.digitaloceanspaces.com/red%20is%20bad.mp4"
+          />
         </div>
       </section>
 
