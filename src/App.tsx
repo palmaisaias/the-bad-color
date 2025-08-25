@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Container, Row, Col, Button, Carousel } from "react-bootstrap";
 import { stories } from "./data/stories";
 
@@ -6,6 +6,25 @@ import { stories } from "./data/stories";
 type Route = "#/" | "#/screening";
 const HOME: Route = "#/";
 const SCREEN: Route = "#/screening";
+
+/** pause all <audio> elements on the page */
+function pauseAllAudio() {
+  document.querySelectorAll<HTMLAudioElement>("audio").forEach(a => {
+    try { a.pause(); } catch {}
+  });
+}
+
+/** hook: is small/mobile viewport (BS sm breakpoint) */
+function useIsSmall() {
+  const [isSmall, setIsSmall] = useState(() => matchMedia("(max-width: 576px)").matches);
+  useEffect(() => {
+    const mq = matchMedia("(max-width: 576px)");
+    const onChange = () => setIsSmall(mq.matches);
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+  return isSmall;
+}
 
 export default function App() {
   const [route, setRoute] = useState<Route>((window.location.hash as Route) || HOME);
@@ -23,13 +42,6 @@ export default function App() {
       {route === SCREEN && <ScreeningPage onBack={() => (window.location.hash = HOME)} />}
     </Container>
   );
-}
-
-/** utility: pause every <audio> on the page */
-function pauseAllAudio() {
-  document.querySelectorAll<HTMLAudioElement>("audio").forEach(a => {
-    try { a.pause(); } catch {}
-  });
 }
 
 function Brand() {
@@ -66,27 +78,27 @@ function Brand() {
 
 function TalesPage({ onEnter }: { onEnter: () => void }) {
   const [active, setActive] = useState(0);
-  const [touchEnabled, setTouchEnabled] = useState(true);
+  const isSmall = useIsSmall();
 
-  useEffect(() => () => {
-    document.querySelectorAll<HTMLAudioElement>("audio").forEach(a => a.pause());
-  }, []);
+  // pause on unmount
+  useEffect(() => () => pauseAllAudio(), []);
 
   const handleSelect = (next: number) => {
     setActive(next);
-    document.querySelectorAll<HTMLAudioElement>("audio").forEach(a => a.pause());
+    pauseAllAudio();
   };
 
-  // keep handlers tidy
-  const stopSwipe: React.EventHandler<any> = (e) => {
-    // block the carousel from seeing this interaction
+  // handlers to keep taps inside audio from bubbling (extra belt-and-suspenders)
+  const audioTouchStart: React.TouchEventHandler = (e) => {
+    if (e.cancelable) e.preventDefault(); // stop iOS from interpreting as swipe
     e.stopPropagation();
-    // temporarily disable carousel touch while user interacts
-    if (touchEnabled) setTouchEnabled(false);
   };
-  const releaseSwipe = () => {
-    // re-enable after the tap/drag completes
-    if (!touchEnabled) setTouchEnabled(true);
+  const audioPointerDown: React.PointerEventHandler = (e) => {
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+  };
+  const audioMouseDown: React.MouseEventHandler = (e) => {
+    e.stopPropagation();
   };
 
   return (
@@ -106,9 +118,10 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
           indicators
           activeIndex={active}
           onSelect={handleSelect}
-          touch={touchEnabled}        // <- key line
-          keyboard                     // optional: allow arrow keys
-          pause={false}                // don’t auto-pause on hover (mobile)
+          touch={!isSmall}        // <- disable swipe on small screens so audio is reliably tappable
+          keyboard
+          pause={false}
+          controls               // ensure next/prev arrows are visible
         >
           {stories.map((s, i) => (
             <Carousel.Item key={i}>
@@ -118,34 +131,24 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
                 </Col>
 
                 <Col md={6} className="v-text d-flex flex-column justify-content-center p-3 p-md-4">
-                  <div className="text-muted-village" style={{ fontFamily: "var(--headline)" }}>
-                    {s.label}
-                  </div>
+                  <div className="text-muted-village" style={{ fontFamily: "var(--headline)" }}>{s.label}</div>
                   <h2 className="v-h2 h3 mt-1 mb-2">{s.title}</h2>
                   <p className="mb-2" style={{ lineHeight: 1.55, whiteSpace: "pre-line" }}>{s.text}</p>
 
-                  {/* AUDIO: add audio path in stories.ts as s.audio */}
                   {"audio" in s && (s as any).audio && (
                     <div
                       className="no-swipe-audio"
-                      // prevent carousel swipe from triggering
-                      onTouchStart={stopSwipe}
-                      onTouchEnd={releaseSwipe}
-                      onPointerDown={stopSwipe}
-                      onPointerUp={releaseSwipe}
-                      onMouseDown={stopSwipe}
-                      onMouseUp={releaseSwipe}
-                      onClick={stopSwipe}
-                      style={{ touchAction: "pan-y" }}  // allow vertical scroll, block horizontal swipe
+                      onTouchStart={audioTouchStart}
+                      onPointerDown={audioPointerDown}
+                      onMouseDown={audioMouseDown}
+                      style={{ touchAction: "pan-y" }} // allow vertical scroll; block horizontal gestures
                     >
                       <audio
                         controls
                         preload="none"
                         playsInline
-                        // only load the active slide’s audio
                         src={active === i ? (s as any).audio : undefined}
                         className="w-100"
-                        // compact-ish height (native UI still rules on iOS)
                         controlsList="nodownload noplaybackrate"
                       />
                     </div>
@@ -160,7 +163,7 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
           <a
             className="v-link"
             href="#/screening"
-            onClick={(e) => { e.preventDefault(); document.querySelectorAll<HTMLAudioElement>('audio').forEach(a => a.pause()); onEnter(); }}
+            onClick={(e) => { e.preventDefault(); pauseAllAudio(); onEnter(); }}
           >
             enter the Village
           </a>
@@ -171,11 +174,7 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
 }
 
 function ScreeningPage({ onBack }: { onBack: () => void }) {
-  useEffect(() => {
-    // ensure nothing keeps playing if user jumped here mid-track
-    pauseAllAudio();
-  }, []);
-
+  useEffect(() => { pauseAllAudio(); }, []);
   return (
     <>
       <Row className="align-items-center mb-3 g-3">

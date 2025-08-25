@@ -125,3 +125,9 @@ body{
     height: 36px;           /* browsers may ignore exact height, but helps on Android/Chrome */
   }
 }
+
+@media (max-width: 576px) {
+  .no-swipe-audio audio {
+    height: 32px; /* or 28px */
+  }
+}
