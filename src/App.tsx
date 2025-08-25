@@ -65,7 +65,6 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
       <section className="v-card p-4 mb-4 text-center">
         <h1 className="v-h1 mb-2">Listen. The forest keeps secrets.</h1>
         <p className="mx-auto mb-0" style={{ maxWidth: "70ch", opacity: .85 }}>
-          A curated carousel pairs each tale with an image. Use the controls to move through the stories.
           When you are ready, enter the village to begin the screening.
         </p>
       </section>
