@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Carousel } from "react-bootstrap";
 import { stories } from "./data/stories";
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
 
 /** simple hash router to work perfectly on static hosts */
 type Route = "#/" | "#/screening";
@@ -80,25 +82,11 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
   const [active, setActive] = useState(0);
   const isSmall = useIsSmall();
 
-  // pause on unmount
   useEffect(() => () => pauseAllAudio(), []);
 
   const handleSelect = (next: number) => {
     setActive(next);
     pauseAllAudio();
-  };
-
-  // handlers to keep taps inside audio from bubbling (extra belt-and-suspenders)
-  const audioTouchStart: React.TouchEventHandler = (e) => {
-    if (e.cancelable) e.preventDefault(); // stop iOS from interpreting as swipe
-    e.stopPropagation();
-  };
-  const audioPointerDown: React.PointerEventHandler = (e) => {
-    if (e.cancelable) e.preventDefault();
-    e.stopPropagation();
-  };
-  const audioMouseDown: React.MouseEventHandler = (e) => {
-    e.stopPropagation();
   };
 
   return (
@@ -118,10 +106,10 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
           indicators
           activeIndex={active}
           onSelect={handleSelect}
-          touch={!isSmall}        // <- disable swipe on small screens so audio is reliably tappable
+          touch={!isSmall ? true : false}   // disable swipe on small screens – reliable taps
           keyboard
           pause={false}
-          controls               // ensure next/prev arrows are visible
+          controls
         >
           {stories.map((s, i) => (
             <Carousel.Item key={i}>
@@ -135,21 +123,21 @@ function TalesPage({ onEnter }: { onEnter: () => void }) {
                   <h2 className="v-h2 h3 mt-1 mb-2">{s.title}</h2>
                   <p className="mb-2" style={{ lineHeight: 1.55, whiteSpace: "pre-line" }}>{s.text}</p>
 
-                  {"audio" in s && (s as any).audio && (
+                  {/* Native audio player inside rounded box */}
+                  { s.audio && (
                     <div
-                      className="no-swipe-audio"
-                      onTouchStart={audioTouchStart}
-                      onPointerDown={audioPointerDown}
-                      onMouseDown={audioMouseDown}
-                      style={{ touchAction: "pan-y" }} // allow vertical scroll; block horizontal gestures
+                      className="audio-box no-swipe-audio"
+                      onTouchStart={(e) => e.stopPropagation()}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      style={{ touchAction: 'none' }}
                     >
-                      <audio
-                        controls
-                        preload="none"
-                        playsInline
-                        src={active === i ? (s as any).audio : undefined}
-                        className="w-100"
-                        controlsList="nodownload noplaybackrate"
+                      <AudioPlayer
+                        src={s.audio}
+                        showJumpControls={false}
+                        customAdditionalControls={[]}
+                        layout="horizontal"
+                        className="village-audioplayer"
                       />
                     </div>
                   )}

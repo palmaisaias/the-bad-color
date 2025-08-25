@@ -12,7 +12,7 @@ export const stories: Story[] = [
     label: "Diana",
     title: "The Mother in Mourning",
     text: `Her love for music and lavender was eclipsed when her husband Edward was killed in a senseless act of violence during a late-night store robbery. She was left holding their 7-month-old son, Vincent, knowing he would grow up never hearing his father's voice. Overwhelmed by grief and the ugliness of the world, she became one of the first to believe that a village could be built away from it all — where children could grow in safety and innocence.`,
-    audio: "/audio/diana.m4a"
+    audio: "/audio/diana.mp3"
   },
   {
     image: "image2.webp",

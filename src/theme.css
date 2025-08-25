@@ -131,3 +131,109 @@ body{
     height: 32px; /* or 28px */
   }
 }
+
+/* Compact audio “box” */
+.audio-mini{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow:0 4px 14px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.04);
+  width:min(220px, 100%);   /* small box instead of long bar */
+}
+
+.audio-mini-btn{
+  width:36px; height:36px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.14);
+  background:linear-gradient(180deg, rgba(255,245,220,0.10), rgba(0,0,0,0.25));
+  color:var(--ink);
+  display:grid; place-items:center;
+  cursor:pointer;
+}
+.audio-mini-btn:hover{ box-shadow:0 0 0 3px var(--ring); }
+
+.audio-mini-btn svg{
+  fill:var(--ink);
+}
+
+.audio-mini-track{
+  position:relative;
+  flex:1;
+  height:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.18);
+  overflow:hidden;
+}
+.audio-mini-progress{
+  position:absolute; inset:0 100% 0 0;
+  height:100%;
+  background:var(--accent);
+  transition:width .2s ease;
+}
+
+/* extra-tight on very small screens */
+@media (max-width: 420px){
+  .audio-mini{ width: 180px; padding:6px 8px; gap:8px; }
+  .audio-mini-btn{ width:32px; height:32px; }
+  .audio-mini-track{ height:5px; }
+}
+
+/* Rounded “box” around the native audio */
+.audio-box{
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 6px 18px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.04);
+  width: min(360px, 100%);
+}
+
+/* Size the native player; browsers keep their own chrome but respect box size */
+.audio-native{
+  width: 100%;
+  height: 36px;              /* iOS may ignore exact height; Android/desktop won’t */
+  border-radius: 10px;
+  background: transparent;
+}
+
+/* Keep carousel from interpreting horizontal swipes on the audio area */
+.no-swipe-audio{ touch-action: pan-y; }
+
+@media (max-width: 480px){
+  .audio-box{ padding: 8px 10px; border-radius: 14px; width: min(300px, 100%); }
+  .audio-native{ height: 32px; }
+}
+
+.audio-box {
+  display: inline-block;
+  padding: 6px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.35);
+  box-shadow: 0 6px 18px var(--shadow);
+  width: auto;
+}
+
+.village-audioplayer {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+}
+
+.village-audioplayer .rhap_container {
+  background: transparent !important;
+}
+
+.village-audioplayer .rhap_progress-section {
+  flex: 1;
+  padding: 0 8px;
+}
+
+.village-audioplayer .rhap_controls-section button {
+  color: var(--ink) !important;
+}
