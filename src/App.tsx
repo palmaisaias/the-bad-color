@@ -57,7 +57,7 @@ function StyleBlock() {
         --muted: #c8b999;
         --accent: #c4a13a;
         --accent-2: #7d3a1f;
-        --accent-3: #355b3a; /* subtle pine */
+        --accent-3: #355b3a;
         --ring: rgba(196, 161, 58, 0.35);
         --shadow: rgba(0,0,0,0.35);
         --radius: 18px;
@@ -71,10 +71,20 @@ function StyleBlock() {
 
       * { box-sizing: border-box; }
       html, body, #root { height: 100%; }
-      body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); }
-      .village-root { min-height: 100vh; position: relative; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--body);
+        overflow-x: hidden;
+      }
+      .village-root {
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
 
-      /* Background texture and vignette */
+      /* Background */
       .village-root::before {
         content: "";
         position: fixed; inset: 0; pointer-events: none;
@@ -82,28 +92,32 @@ function StyleBlock() {
                     radial-gradient(100% 60% at 50% 120%, rgba(0,0,0,0.6), rgba(0,0,0,0.9));
         z-index: -2;
       }
-.village-root::after {
-  /* keep the texture inside the viewport */
-  inset: 0;               /* was: -50% -50% */
-  background: repeating-radial-gradient(circle at 20% 30%,
-    rgba(255,255,255,0.02), rgba(255,255,255,0.02) 2px,
-    transparent 3px, transparent 6px);
-  filter: contrast(120%) brightness(90%);
-  animation: grain 14s steps(10) infinite;
-}
+      .village-root::after {
+        content: "";
+        position: fixed; inset: 0; pointer-events: none; z-index: -1;
+        background: repeating-radial-gradient(circle at 20% 30%,
+          rgba(255,255,255,0.02), rgba(255,255,255,0.02) 2px,
+          transparent 3px, transparent 6px);
+        filter: contrast(120%) brightness(90%);
+        animation: grain 14s steps(10) infinite;
+      }
       @keyframes grain { 0% { transform: translate(0,0);} 100% { transform: translate(10px, -12px);} }
 
       .frame {
-        max-width: 1200px; margin: 0 auto; padding: calc(var(--pad) + 8px) var(--pad);
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: calc(var(--pad) + 8px) var(--pad);
       }
 
       .titlebar {
-        display: flex; align-items: center; justify-content: space-between;
-        gap: var(--gap); margin-bottom: calc(var(--pad) * 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--gap);
+        margin-bottom: calc(var(--pad) * 0.6);
+        flex-wrap: wrap;
       }
-      .brand {
-        display: flex; align-items: center; gap: 14px;
-      }
+      .brand { display: flex; align-items: center; gap: 14px; }
       .brand-badge {
         width: 42px; height: 42px; border-radius: 50%;
         background: conic-gradient(from 220deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent));
@@ -141,24 +155,30 @@ function StyleBlock() {
 
       .hero {
         display: grid; grid-template-columns: 1fr; gap: var(--gap); align-items: center;
+        text-align: center;
       }
       .hero h1 {
         font-family: var(--headline); font-weight: 700; font-size: clamp(28px, 5vw, 56px);
         line-height: 1.05; margin: 0 0 6px 0;
         text-shadow: 0 2px 0 rgba(0,0,0,0.4);
       }
-      .hero p { margin: 0; opacity: 0.8; max-width: 70ch; }
+      .hero p { margin: 0 auto; opacity: 0.8; max-width: 70ch; }
 
-      /* Carousel layout */
+      /* Carousel */
       .carousel {
-        position: relative; overflow: clip; display: grid; grid-template-columns: 1fr 1fr;
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         min-height: 420px;
+        width: 100%;
+        margin: 0 auto;
       }
       @media (max-width: 860px) {
         .carousel { grid-template-columns: 1fr; }
+        .slide-text { text-align: center; }
       }
 
-      .slide-media { position: relative; }
       .slide-media img {
         width: 100%; height: 100%; object-fit: cover; display: block;
         transform: scale(1.015);
@@ -167,7 +187,9 @@ function StyleBlock() {
       @keyframes slow-pan { from { transform: scale(1.015) translateX(0); } to { transform: scale(1.06) translateX(-6px); } }
 
       .slide-text {
-        padding: clamp(18px, 2.6vw, 34px); display: flex; flex-direction: column; gap: 10px;
+        padding: clamp(18px, 2.6vw, 34px);
+        display: flex; flex-direction: column; gap: 10px;
+        justify-content: center;
       }
       .slide-text h3 { font-family: var(--headline); font-size: clamp(20px, 2.6vw, 28px); margin: 0; color: var(--muted); letter-spacing: 0.4px; }
       .slide-text h2 { font-family: var(--display); font-size: clamp(26px, 3.2vw, 38px); margin: 4px 0 6px; color: var(--ink); }
@@ -193,16 +215,20 @@ function StyleBlock() {
       }
       .link-enter:hover { color: var(--muted); border-bottom-color: var(--accent); }
 
-      /* Screening page */
+      /* Screening */
       .screening-wrap { display: grid; gap: var(--gap); }
-      .screening-head { display: flex; align-items: center; justify-content: space-between; gap: var(--gap); }
-      .screening-title { font-family: var(--headline); margin: 0; font-size: clamp(24px, 4vw, 40px); }
+      .screening-head {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: var(--gap); flex-wrap: wrap;
+      }
+      .screening-title { font-family: var(--headline); margin: 0; font-size: clamp(24px, 4vw, 40px); text-align: center; }
 
       .video-shell {
         position: relative; border-radius: var(--radius-lg); overflow: hidden; isolation: isolate;
         background: radial-gradient(120% 140% at 30% 10%, rgba(250,230,165,0.05), rgba(0,0,0,0.7));
         border: 1px solid rgba(255,255,255,0.08);
         box-shadow: 0 18px 40px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.04);
+        max-width: 100%;
       }
       .video-shell::after {
         content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -213,6 +239,7 @@ function StyleBlock() {
 
       .footer {
         display: grid; place-items: center; padding: 30px 10px; opacity: 0.7; font-size: 14px;
+        text-align: center;
       }
     `}</style>
   );
